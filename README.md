@@ -8,8 +8,12 @@ Handles user registration, identity management, and profile data.
 - Linked identities for multi-provider login
 
 ## Stack
-- ASP.NET Core Web API
-- MySQL
-- Dockerized for easy deployment
+ - node js
 
 ## Environment Variables
+
+## ⚙️ Environment Variables
+| Name | Description | Example |
+|------|--------------|----------|
+| `PORT` | API server port | `3000` |
+| `DB_URL` | MySQL connection string | `mysql://user:pass@host:3306/kobflow_users` |
