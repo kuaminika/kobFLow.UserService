@@ -10,7 +10,6 @@ Handles user registration, identity management, and profile data.
 ## Stack
  - node js
 
-## Environment Variables
 
 ## ⚙️ Environment Variables
 | Name | Description | Example |
