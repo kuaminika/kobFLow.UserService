@@ -1,12 +1,13 @@
 import { ConsoleLogger } from "./ConsoleLogger.js";
 import callsites from "callsites";
+
 function LogTool({  givenToolExtensions ,logFactory}) {
     const self = this;   
-    console.log("args:",{  givenToolExtensions ,logFactory}  );
+   
     let defaultExtensions = [new ConsoleLogger()];
     self.toolExtensions = givenToolExtensions || [];   
- self.toolExtensions = self.toolExtensions.concat(defaultExtensions);
-    console.log('LogTool initialized with extensions:', this.toolExtensions);
+    self.toolExtensions = self.toolExtensions.concat(defaultExtensions);
+
     self.formatLogMessage = (logItem) => {
         return `[${logItem.timestamp.toISOString()}] [${levelsArr[logItem.level]}] [${logItem.location}] ${logItem.message}`;
     }
