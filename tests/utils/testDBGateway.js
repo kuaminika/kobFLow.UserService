@@ -22,7 +22,7 @@ async function runTests() {
     // 2️⃣ Test a simple query
     console.log("\n⏳ Running test query...");
     const users = await gateway.doQuery({
-      queryStr: "SELECT NOW() as current_time",
+      queryStr: "SELECT NOW() as `current_time`",
       params: []
     });
     console.log("✅ Query success! Result:", users);

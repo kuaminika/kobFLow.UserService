@@ -8,5 +8,6 @@ const password = process.env.DB_PWD;
 const dbPort = process.env.DB_PORT;
 const dbSettings = {host,user,database,password,dbPort};
 
+const defaultOrgId = process.env.DEFAULT_ORG_ID;
 
-export default {...dbSettings,port}
+export default {...dbSettings,port,defaultOrgId}

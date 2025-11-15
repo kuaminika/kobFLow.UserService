@@ -6,8 +6,8 @@ function generateBlankUser()
             "email": "",
             "name": "",
             "provider": "",
-            "providerId": "",
-            "createdAt": new Date(),
+            "providerUserId": "",
+            "memberSince": new Date(),
             "updatedAt": new Date()
             };
 }
@@ -22,9 +22,10 @@ function User(rawUser)
     self.id = rawUser.id;
     self.email= rawUser.email;
     self.name = rawUser.name;
+    self.orgId = rawUser.orgId;
     self.provider = rawUser.provider;
-    self.providerId = rawUser.providerId;
-    self.createdAt = rawUser.createdAt;
+    self.providerUserId = rawUser.providerUserId;
+    self.memberSince = rawUser.memberSince;
     self.updatedAt = rawUser.updatedAt;
 
 
