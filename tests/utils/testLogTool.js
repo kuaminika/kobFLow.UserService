@@ -42,13 +42,8 @@ const action = "TestLogToolActions";
 
 
     const dbGateway = new MySQL_DBGateway(config);
-    console.log('MySQL_DBGateway created:', dbGateway);
     const repository = new LogRepository({dbGateway});
-    console.log('LogRepository created:', repository);
     const mysqlLogToolExtension = new MySqlLogToolExtension({repository, backUpExtension: new ConsoleLogger()});
-    console.log('MySqlLogToolExtension created:', mysqlLogToolExtension);
-
-
     const multiExtensionLogger = new LogTool({
         givenToolExtensions: [mysqlLogToolExtension],
         logFactory: new LogFactory({ application: config.applicationName || 'TestApp',  service: 'AuthService',action}),
