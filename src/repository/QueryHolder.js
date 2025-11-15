@@ -26,6 +26,9 @@ function QueryHolder() {
     self.updateUserQuery = `update user set name = ?, email = ?  where id = ?`;
     self.updateUserIdentityQuery = `update user_identities set provider = ?, provider_user_id = ? where user_id = ?`;
 
+
+    self.confirmIdentityQuery = `select id from user_identities where user_id = ?`;
+
     self.getAllUsersQuery = `select   u.id,
                             u.ord_id orgId,
                             email,

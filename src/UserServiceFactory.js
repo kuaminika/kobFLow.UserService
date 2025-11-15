@@ -8,14 +8,15 @@ import { ConsoleLogger } from './utils/ConsoleLogger.js';
 import { UserFactory } from './models/UserFactory.js';
 import DBGatewayArgs from './utils/DBGatewayArgs.js';
 import { MySQL_DBGateway } from './utils/DBGateway.js';
-
+import { Constants } from './Constants.js';
 import { QueryHolder } from './repository/QueryHolder.js';
 
-
+const messageBoard = Constants;
 
 function UserServiceFactory(configs) {
     const self = this;
     const config = configs || {};
+ 
     self.createUserService = ( ) => {
 
         const dbArgs = new DBGatewayArgs(config);
@@ -31,13 +32,13 @@ function UserServiceFactory(configs) {
         
         const multiExtensionLogger = new LogTool({
             givenToolExtensions: [mysqlLogToolExtension],
-            logFactory: new LogFactory({ application: config.applicationName || 'TestApp',  service: 'AuthService',action:'testUserService' }),
+            logFactory: new LogFactory({ application: config.applicationName ,  service: config.serviceName  }),
         });
 
 
         // Act
-        const userRepository = new UserRepository({ dbGateway, queryHolder, userFactory });
-        const userService = new UserService({ userRepository, logTool: multiExtensionLogger, userFactory });
+        const userRepository = new UserRepository({ dbGateway, queryHolder, userFactory,messageBoard, logTool: multiExtensionLogger });
+        const userService = new UserService({ userRepository, logTool: multiExtensionLogger, userFactory,messageBoard });
         return userService;
     }
 

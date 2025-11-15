@@ -1,0 +1,61 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### Test root endpoint
+GET {{baseUrl}}/
+
+### Test IPData endpoint
+GET {{baseUrl}}/IPData
+
+### Test findOrCreateUser - New User
+POST {{baseUrl}}/api/findOrCreateUser
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com",
+  "name": "Test User",
+  "providerUserId": "12345",
+  "provider":"example"
+}
+
+### Test findOrCreateUser - Existing User
+POST {{baseUrl}}/api/findOrCreateUser
+Content-Type: {{contentType}}
+
+{
+  "email": "existing@example.com",
+  "name": "Existing User",
+  "providerUserId": "67890",
+  "provider":"example"
+}
+
+### Test findOrCreateUser - Minimal data
+POST {{baseUrl}}/api/findOrCreateUser
+Content-Type: {{contentType}}
+
+{
+  "email": "minimal@example.com"
+}
+
+### Test findOrCreateUser - Invalid data (missing email)
+POST {{baseUrl}}/api/findOrCreateUser
+Content-Type: {{contentType}}
+
+{
+  "name": "User Without Email"
+}
+
+### Test findOrCreateUser - Different user data
+POST {{baseUrl}}/api/findOrCreateUser
+Content-Type: {{contentType}}
+
+{
+  "email": "another@example.com",
+  "name": "Another User",
+  "providerUserId": "11111",
+  "provider":"example",
+  "profileData": {
+    "age": 30,
+    "preferences": ["news", "updates"]
+  }
+}

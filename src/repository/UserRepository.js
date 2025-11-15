@@ -4,7 +4,7 @@ import { QueryHolder } from './QueryHolder.js';
 
 
 
-function UserRepository({ dbGateway ,queryHolder, userFactory}) {
+function UserRepository({ dbGateway ,queryHolder, userFactory,logTool}) {
 
 
     const self = this;
@@ -74,16 +74,41 @@ function UserRepository({ dbGateway ,queryHolder, userFactory}) {
 
     self.updateUser = async (  user) => {
         console.log("Updating user:", user);
+        logTool.log("Updating user:"+ JSON.stringify( user));
         const generalResult = {userResult :{}, identityResult:{}};
     
          generalResult.userResult =  await dbGateway.doQuery({queryStr:queryHolder.updateUserQuery,
-            params: [user.name, user.email,  user.id]
-        }); 
+                                            params: [user.name, user.email,  user.id]
+                                        }); 
 
         if(user.provider && user.providerUserId)
-            generalResult.identityResult = await dbGateway.doQuery({queryStr:queryHolder.updateUserIdentityQuery,
-                    params: [user.provider, user.providerUserId, user.id]
-                });
+        {   
+
+            logTool.log("Identity details provided");
+            logTool.log("Checking to see if user has identity details");
+            
+            const results = await dbGateway.doQuery({
+                queryStr: queryHolder.confirmIdentityQuery,
+                params: [user.id]
+            });
+
+            if(results.length === 0) {
+                logTool.log("No identity details found, will add");
+
+                 generalResult.identityResult = await dbGateway.doQuery({queryStr:queryHolder.addUserIdentityQuery,
+                                            params: [user.id,user.provider, user.providerUserId ]
+                                        });
+                
+            }
+            else 
+            {
+                logTool.log("Identity details are found, will update");
+
+                 generalResult.identityResult = await dbGateway.doQuery({queryStr:queryHolder.updateUserIdentityQuery,
+                                            params: [user.provider, user.providerUserId, user.id]
+                                        });
+            }
+        }
         console.log("Update results:", generalResult);
 
         return generalResult;
