@@ -55,7 +55,7 @@ const action = "TestLogToolActions";
     });
     
     
-    multiExtensionLogger.log(  'This is an info message db' );
-    multiExtensionLogger.warn( 'This is a warning message db' );
-    multiExtensionLogger.error( 'This is an error message db' );
+    multiExtensionLogger.log(  '1-This is an info message db' );
+    multiExtensionLogger.warn( '2-This is a warning message db',"customLocation" );
+    multiExtensionLogger.error( '3- This is an error message db' );
     console.log('✅ Test 3 passed: Multiple extensions logging works\n');

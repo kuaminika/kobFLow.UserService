@@ -1,5 +1,5 @@
 import { ConsoleLogger } from "./ConsoleLogger.js";
-
+import callsites from "callsites";
 function LogTool({  givenToolExtensions ,logFactory}) {
     const self = this;   
     console.log("args:",{  givenToolExtensions ,logFactory}  );
@@ -26,23 +26,21 @@ function LogTool({  givenToolExtensions ,logFactory}) {
         return logItem;
     }
    self._getCallerInfo = () => {
-        const stack = new Error().stack; 
-        const stackLines = stack.split('\n'); 
-      
-        if (stackLines.length >= 4) {
-            const callerLine = stackLines[2].trim();
-            const match = callerLine.match(/at\s+([^(]+)\s+\(?(.+):(\d+):(\d+)\)?/);
-            if (match) {
-                const file = match[2];
-                const fileName = file.split('/').pop() || file.split('\\').pop();
-                return {
-                    file: fileName,
-                    line: match[3],
-                    location: `${fileName}:${match[3]}`
-                };
-            }
-        }
-        return { location: 'unknown' };
+       try{
+        const stack = callsites();
+        // The caller is typically at index 2 (0 is this function, 1 is the log method, 2 is the caller)
+        const caller = stack[2];
+         const filePath = caller.getFileName();
+        const fileName = filePath ? filePath.split(/[\\/]/).pop() : "unknown";
+
+         return { 
+            location: `${fileName}:${caller.getLineNumber()}`
+        };
+       }catch(err){console.error("Error in _getCallerInfo:",err);
+        return { location: "unknown"};
+
+       }
+    
     }
 
 
@@ -62,7 +60,7 @@ function LogTool({  givenToolExtensions ,logFactory}) {
         let logItem = dressUpLogItem({message,level:levels.Info,location:customLocation || callerInfo.location});
      
         const formattedMessage = self.formatLogMessage(logItem);
-        console.log("Logging message:",formattedMessage);
+     
         self.toolExtensions.forEach(extension  => {
             extension.log({formattedMessage, logItem});
         });
@@ -71,7 +69,7 @@ function LogTool({  givenToolExtensions ,logFactory}) {
 
     self.error = (message,customLocation) => {
         
-        const callerInfo = this.includeCallerInfo ? this._getCallerInfo() : {};
+        const callerInfo =  this._getCallerInfo()  ;
         let logItem = dressUpLogItem({message,level:levels.Error,location:customLocation || callerInfo.location});
         const formattedMessage = self.formatLogMessage(logItem);
         self.toolExtensions.forEach(extension  => {
@@ -82,7 +80,7 @@ function LogTool({  givenToolExtensions ,logFactory}) {
     
     self.warn = (message ,customLocation ) => {
         
-        const callerInfo = this.includeCallerInfo ? this._getCallerInfo() : {};
+        const callerInfo = this._getCallerInfo()  ;
         let logItem = dressUpLogItem({message,level:levels.Warning,location:customLocation || callerInfo.location});
         const formattedMessage = self.formatLogMessage(logItem);
         self.toolExtensions.forEach(extension  => {
