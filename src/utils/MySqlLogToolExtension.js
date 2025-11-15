@@ -1,17 +1,17 @@
-function MySqlLogToolExtension({ repository, backUpExtension}) {
+function MySqlLogToolExtension({ logrepository, backUpExtension}) {
 
     const self = this;
-
+    self.repository = logrepository;
+        self.backUpExtension = backUpExtension;
     async function doTheLogging({logItem, formattedMessage}) {
-         try {
-            
-            await repository.addLogItem(logItem);
+         try { 
+            await self.repository.addLogItem(logItem);
         } catch (err) {
 
          
             // Fallback to backup logger if database logging fails
-            if (backUpExtension) {
-                backUpExtension.error({ formattedMessage:"Error logging to database:"+err.messager });
+            if (self.backUpExtension) {
+                self.backUpExtension.error({ formattedMessage:"Error logging to database:"+err.message });
                 console.log("Falling back to backup logger for message:", formattedMessage);
                 console.log(err);
             } else {
