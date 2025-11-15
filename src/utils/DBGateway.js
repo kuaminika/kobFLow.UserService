@@ -18,9 +18,9 @@ function MySQLFormatter()
         // Implement data formatting if needed
       const formattedValues = [...values];
       formattedValues.forEach((val, index) => {
-        console.log("Checking value:", val, typeof val);
+     //   console.log("Checking value:", val, typeof val);
           if (val instanceof Date) {
-              console.log("Formatting date:", val);
+           //   console.log("Formatting date:", val);
               formattedValues[index] = self.formatDateTime(val);
           }
 
@@ -79,7 +79,7 @@ function MySQL_DBGateway(args)
                 try{
                     const {queryStr,params } = query_args;
                     const formattedParams = formatter.formatData(params);
-                    console.log("Executing Query:",queryStr,formattedParams);
+              //      console.log("Executing Query:",queryStr,formattedParams);
                   
                     const connectionP =  connect();
                     connectionP.then(conn=>{

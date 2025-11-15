@@ -10,4 +10,6 @@ const dbSettings = {host,user,database,password,dbPort};
 
 const defaultOrgId = process.env.DEFAULT_ORG_ID;
 
-export default {...dbSettings,port,defaultOrgId}
+export default {...dbSettings,port,defaultOrgId,
+     serviceName:process.env.SERVICE_NAME, 
+     applicationName:process.env.APPLICATION_NAME};
