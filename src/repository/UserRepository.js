@@ -12,22 +12,28 @@ function UserRepository({ dbGateway ,queryHolder, userFactory}) {
 
     self.getUserById = async (userId) => {
 
-        
+
         const results = await dbGateway.doQuery({
             queryStr: queryHolder.getUserByIdQuery,
             params: [userId]
-        }).catch((err) => {
-           // console.error("Error executing query:", err);
-            throw err;
-        });
+        }) 
 
         if(results.length === 0) {
             return null;
         }
 
-        return userFactory.createUser(results[0]);
+        return userFactory.createUser(results[0]);                      
     }
 
+    self.getAllUsers = async () => {
+
+        const results = await dbGateway.doQuery({
+            queryStr: queryHolder.getAllUsersQuery,
+            params: []
+        }); 
+        return results.map(row => userFactory.createUser(row));
+
+    }
 
     self.getByEmail = async (email) => {
 

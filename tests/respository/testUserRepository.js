@@ -46,8 +46,8 @@ try {
     assert.strictEqual(user.id, 1, 'User ID should be 1');
     console.log('✅ Test passed: Fetched user by ID successfully!');
     
-    // After fetching, run the add user test
-    testAddUser();
+    // After fetching, run the fetch all users test
+    testFetchAllUsers();
   }).catch((err) => {
     console.error('❌ Test failed:', err.message|| err.code);
     process.exit(1);
@@ -57,6 +57,43 @@ try {
   console.error('❌ Test failed:', err.message|| err.code);
   process.exit(1);
 }
+
+
+function testFetchAllUsers() {
+
+      // Test fetching user by ID
+      console.log('\n🧪 Running fetching all users...');
+
+      try {
+        // Arrange
+        const dbArgs = new DBGatewayArgs(config);
+        const dbGateway = new MySQL_DBGateway(dbArgs);
+        const queryHolder = new QueryHolder();
+        const userFactory = new UserFactory();
+        const userRepository = new UserRepository({ dbGateway, queryHolder, userFactory });
+
+        // Act & Assert
+        userRepository.getAllUsers().then((users) => {
+          console.log("users:", users);
+          assert.ok(users !== null, 'Users be an array'); 
+          console.log('✅ Test passed fetching users!');
+          
+          // After fetching, run the add user test
+          testAddUser();
+        }).catch((err) => {
+          console.error('❌ Test failed:', err.message|| err.code);
+          process.exit(1);
+        });
+
+      } catch (err) {
+        console.error('❌ Test failed:', err.message|| err.code);
+        process.exit(1);
+      }
+
+
+}
+
+
 
 // Test adding a new user
 async function testAddUser() {
