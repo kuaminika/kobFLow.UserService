@@ -63,7 +63,7 @@ jobs:
             npm install --production
 
             echo "Reloading PM2 ecosystem"
-            pm2 reload ecosystem.config.js --update-env
+            pm2 reload ecosystem.config.cjs --update-env
 
             echo "Saving PM2 state"
             pm2 save
