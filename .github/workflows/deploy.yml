@@ -1,0 +1,55 @@
+name: Deploy User Service
+
+on:
+  push:
+    branches:
+      - master
+      - dev*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # map branch → environment name
+    environment: ${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+          script: |
+            # Determine environment (DEV for dev* branches)
+            ENVIRONMENT="${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}"
+            echo "Deploying branch '${{ github.ref_name }}' to environment: $ENVIRONMENT"
+
+            cd ${{ vars.ENV_DIR }}
+
+            echo "Pulling latest code"
+            git pull
+
+            echo "Writing .env for $ENVIRONMENT"
+            rm -f .env
+            cat <<EOF > .env
+            HTTP_PORT=${{ vars.HTTP_PORT }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PWD=${{ secrets.DB_PWD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DEFAULT_ORG_ID=${{ vars.DEFAULT_ORG_ID }}
+            SERVICE_NAME=${{ vars.SERVICE_NAME }}
+            APPLICATION_NAME=${{ vars.APPLICATION_NAME }}
+            EOF
+
+            echo "Installing dependencies"
+            npm install --production
+
+            echo "Reloading PM2 ecosystem"
+            pm2 reload ecosystem.config.js --update-env
+
+            echo "Saving PM2 state"
+            pm2 save
