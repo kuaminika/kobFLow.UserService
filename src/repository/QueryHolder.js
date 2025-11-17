@@ -7,7 +7,7 @@ function QueryHolder() {
                             u.created_at createdAt,
                             provider, 
                             provider_user_id providerUserId
-                                from user u 
+                                from User u
                             left  join user_identities ui on u.id = ui.user_id
                             where u.id = ?`;
 
@@ -18,7 +18,7 @@ function QueryHolder() {
                             u.created_at createdAt,
                             provider, 
                             provider_user_id providerUserId
-                                from user u 
+                                from User u
                             left  join user_identities ui on u.id = ui.user_id
                             where u.email = ?`;
     self.addUserQuery = `insert into user (email, name, created_at,ord_id) values (?, ?, ?, ?)`;
@@ -36,7 +36,7 @@ function QueryHolder() {
                             u.created_at createdAt,
                             provider, 
                             provider_user_id providerUserId
-                                from user u 
+                                from User u
                             left  join user_identities ui on u.id = ui.user_id 
                             where deleted_at is null`;
 
