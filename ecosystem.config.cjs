@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "UserService",
-      script: "index.js",
+      script: "src/index.js",
 
       // Load .env created by GitHub Actions
       env_file: ".env",
