@@ -14,6 +14,17 @@ jobs:
     environment: ${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}
 
     steps:
+      - name: debug variables
+        run: |
+            echo "Branch Name: ${{ github.ref_name }}"
+            echo "Selected Environment: ${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}"
+            echo "ENV_DIR: ${{ vars.ENV_DIR }}"
+            echo "HTTP_PORT: ${{ vars.HTTP_PORT }}"
+            echo "DEFAULT_ORG_ID: ${{ vars.DEFAULT_ORG_ID }}"
+            echo "SERVICE_NAME: ${{ vars.SERVICE_NAME }}"
+            echo "APPLICATION_NAME: ${{ vars.APPLICATION_NAME }}"
+           
+    
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
