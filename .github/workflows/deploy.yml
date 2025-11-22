@@ -1,0 +1,69 @@
+name: Deploy User Service
+
+on:
+  push:
+    branches:
+      - master
+      - dev*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # map branch → environment name
+    environment: ${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}
+
+    steps:
+      - name: debug variables
+        run: |
+            echo "Branch Name: ${{ github.ref_name }}"
+            echo "Selected Environment: ${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}"
+            echo "ENV_DIR: ${{ vars.ENV_DIR }}"
+            echo "HTTP_PORT: ${{ vars.HTTP_PORT }}"
+            echo "DEFAULT_ORG_ID: ${{ vars.DEFAULT_ORG_ID }}"
+            echo "SERVICE_NAME: ${{ vars.SERVICE_NAME }}"
+            echo "APPLICATION_NAME: ${{ vars.APPLICATION_NAME }}"
+           
+    
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: ${{ secrets.SERVER_USER   }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+          script: |
+            # Determine environment (DEV for dev* branches)
+            ENVIRONMENT="${{ startsWith(github.ref_name, 'dev') && 'DEV' || 'PROD' }}"
+            echo "Deploying branch '${{ github.ref_name }}' to environment: $ENVIRONMENT"
+
+            cd ${{ vars.ENV_DIR }}
+
+            echo "Pulling latest code"
+            git fetch all 
+            git checkout ${{ github.ref_name }} || git checkout -b ${{ github.ref_name }} --track origin/${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+
+            echo "Writing .env for $ENVIRONMENT"
+            rm -f .env
+            cat <<EOF > .env
+            HTTP_PORT=${{ vars.HTTP_PORT }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PWD=${{ secrets.DB_PWD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DEFAULT_ORG_ID=${{ vars.DEFAULT_ORG_ID }}
+            SERVICE_NAME=${{ vars.SERVICE_NAME }}
+            APPLICATION_NAME=${{ vars.APPLICATION_NAME }}
+            EOF
+
+            echo "Installing dependencies"
+            npm install --production
+
+            echo "Reloading PM2 ecosystem"
+            pm2 reload ecosystem.config.cjs --update-env
+
+            echo "Saving PM2 state"
+            pm2 save
